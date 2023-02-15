@@ -24,37 +24,73 @@ impl Player{
         io::stdin().read_line(&mut self.name).expect("failed to read line");
     }
     fn place_ships(&mut self,type_ship:ShipsTypes){
-        let mut x = String::new();
-        let mut y = String::new();
-        let mut right_down= String::new();
-        let length = match type_ship{
-            ShipsTypes::Carrier => 5,
-            ShipsTypes::Battleship => 4,
-            ShipsTypes::Destroyer =>3,
-            ShipsTypes::Submarine => 3,
-            ShipsTypes::PatrolBoat =>2,
-        };
-        println!("enter the starting x cordinate: ");
-        io::stdin().read_line(&mut x).expect("failed to read line");
-        let x:usize = match x.trim().parse(){
-            Ok(num) => num,
-            Err(num) =>0,
-        };
-        println!("enter the starting y cordinate: ");
-        io::stdin().read_line(&mut y).expect("failed to read line");
-        let y:usize = match y.trim().parse(){
-            Ok(num) => num,
-            Err(num) => 0,
-        };
-        while true{
-            println!("enter if you would like the ship to go down or right")
-            io::stdin().read_line(&mut right_down).expect("failed to read line");
-            if right_down == String::from("down").trim() || right_down == String::from("right").trim(){
-                break;
+        loop{
+            let mut x = String::new();
+            let mut y = String::new();
+            let mut right_down= String::new();
+            let length = match type_ship{
+                ShipsTypes::Carrier => 5,
+                ShipsTypes::Battleship => 4,
+                ShipsTypes::Destroyer =>3,
+                ShipsTypes::Submarine => 3,
+                ShipsTypes::PatrolBoat =>2,
+            };
+            println!("enter the starting x cordinate: ");
+            io::stdin().read_line(&mut x).expect("failed to read line");
+            let x:usize = match x.trim().parse(){
+                Ok(num) => num,
+                Err(num) =>0,
+            };
+            println!("enter the starting y cordinate: ");
+            io::stdin().read_line(&mut y).expect("failed to read line");
+            let y:usize = match y.trim().parse(){
+                Ok(num) => num,
+                Err(num) => 0,
+            };
+            let mut direction=String::new();
+            while true{
+                direction = String::new();
+                println!("enter what direction you would like to place your ships right or down: ");
+                io::stdin().read_line(&mut direction).expect("failed to read line");
+                if direction.trim() == "right"{
+                    direction = String::from("right");
+                    break;
+                }
+                else if direction.trim() == "down"{
+                    direction = String::from("down");
+                    break;
+                }
+                else{
+                    println!("enter right or down");
+                    continue;
+                }
             }
-            else{
-                println!("you have to enter down or right")
+            let mut for_index = 0;
+            for (index_row,row) in self.board.clone().iter().enumerate(){
+                for (index_column,mut column) in row.iter().enumerate(){
+                    if direction.trim() == "right"{
+                        self.board[y][index_column] = String::from("🛥️ ");
+                        if for_index == length{
+                            break;
+                        }
+                        for_index+=1;
+                    }
+                    else if direction.trim() == "down"{
+                        if index_column == x{
+                        self.board[index_row][x] = String::from("🛥️ ");
+                        if for_index == length{
+                            break;
+                        }
+                        for_index+=1;
+                        }
+                    }
+                }
+                if for_index == length{
+                    break;
+                }
             }
+            break;
+        }
     }
 }
 
@@ -85,6 +121,14 @@ fn get_num_ships()->usize{
     };
     return num_ships;
 }
+fn output(board:Vec<Vec<String>>){
+    for row in board.iter(){
+        for column in row.iter(){
+            print!("{}",column)
+        }
+        println!("")
+    }
+}
 
 fn gameloop(){
     let dimensions = get_dimensions();
@@ -102,11 +146,14 @@ fn gameloop(){
         name:String::new(),
         won:false,
         num_ships:num_ships,
-};
-while true{
-    
-}
+    };
+    while true{
+        p1.place_ships(ShipsTypes::Carrier);
+        break;
+    }
+    output(p1.board);
 }  
+
 
 fn main() {
     while true{
